@@ -126,9 +126,12 @@ chkconfig smb on
 
 # Join domain, must join domain first, otherwise sssd won't start
 shortHostName=`hostname -s`
-hostname ${shortHostName}.${ADDNS}
+#hostname ${shortHostName}.${ADDNS}
+
+hostnamectl set-hostname ${shortHostName}.${ADDNS}
+
 n=0
-until [ $n -ge 40 ]
+until [ $n -ge 4 ]
 do
   if [ ! -z "$ADOUPATH" ]; then
     net ads join createcomputer="$ADOUPATH" -U${DOMAINADMINUSER}@${ADDNS}%${DOMAINADMINPWD}  
@@ -138,11 +141,7 @@ do
   result=$?
   [ $result -eq 0 ] && break
   n=$[$n+1]
-  if [ $n -ge 10 ]; then
-     sleep 120
-  else
-     sleep 30
-  fi
+  sleep 20
 done
 if [ $result -eq 0 ]; then
   klist -k
